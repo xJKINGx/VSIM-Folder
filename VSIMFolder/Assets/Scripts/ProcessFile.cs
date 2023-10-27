@@ -18,30 +18,63 @@ public class ProcessFile : MonoBehaviour
     int zMin;
     int zMax;
 
-    string filePath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\merged.txt";
+    [SerializeField] bool ParseData = true;
 
+    string inFilePath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\merged.txt";
+    string outFilepath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\terrain.txt";
+   
     // Start is called before the first frame update
     void Start()
     {
-        var lineCount = File.ReadLines(filePath).Count();
-        Debug.Log(lineCount);
-        FindMinMax(lineCount);
+        // This if sentence isn't necessary, but useful if the terrain data has already
+        // been generated. 
+        if (ParseData)
+        {
+            // Getting total amount of vertices in the file
+            var lineCount = File.ReadLines(inFilePath).Count();
+            Debug.Log(lineCount);
+
+            // And putting it in the output file
+            File.WriteAllText(outFilepath, lineCount.ToString() + "\n");
+
+            // Now we convert the vertices to smaller x- and z-values.
+            ConvertData(lineCount);
+        }
     }
 
-    void FindMinMax(int fileLength)
+    void ConvertData(int fileLength)
     {
         string line;
-        Vector3 temp = new Vector3();
-        StreamReader read = new StreamReader(filePath);
+
+        StreamReader read = new StreamReader(inFilePath);
 
         for (int i = 0; i < fileLength; i++)
         {
             line = read.ReadLine();
             List<String> pointValues = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            temp = new Vector3(float.Parse(pointValues[0], CultureInfo.InvariantCulture.NumberFormat),
-                               float.Parse(pointValues[2], CultureInfo.InvariantCulture.NumberFormat),
-                               float.Parse(pointValues[1], CultureInfo.InvariantCulture.NumberFormat));
-            Debug.Log(temp);
+            
+            // To change the x- and z-values we need to convert to float
+            List<float> fPointValues = new List<float>();
+            fPointValues.Add(float.Parse(pointValues[0], CultureInfo.InvariantCulture.NumberFormat) - 611000.0f);
+            fPointValues.Add(float.Parse(pointValues[2], CultureInfo.InvariantCulture.NumberFormat));
+            fPointValues.Add(float.Parse(pointValues[1], CultureInfo.InvariantCulture.NumberFormat) - 6641000.0f);
+
+            // And then convert it back into strings
+            pointValues[0] = fPointValues[0].ToString();
+            pointValues[1] = fPointValues[1].ToString();
+            pointValues[2] = fPointValues[2].ToString();
+            
+            // Clearing the list to save memory
+            fPointValues.Clear();
+            
+            // Creating the output string which will be one new line on the file
+            string outputString = pointValues[0] + " " + pointValues[2] + " " + pointValues[1];
+
+            using (StreamWriter w = File.AppendText(outFilepath))
+            {
+                w.WriteLine(outputString);
+            }
+            
         }
     }
 }
