@@ -12,19 +12,11 @@ using UnityEngine.UI;
 
 public class ProcessFile : MonoBehaviour
 {
-
-    int xMin;
-    int xMax;
-    int zMin;
-    int zMax;
-
     [SerializeField] bool ParseData = true;
 
     string inFilePath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\merged.txt";
     string outFilepath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\terrain.txt";
-   
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // This if sentence isn't necessary, but useful if the terrain data has already
         // been generated. 
@@ -39,6 +31,13 @@ public class ProcessFile : MonoBehaviour
 
             // Now we convert the vertices to smaller x- and z-values.
             ConvertData(lineCount);
+            Debug.Log("Point data converted!");
+
+            // -1 since we ignore the first line
+            lineCount = File.ReadLines(outFilepath).Count() - 1;
+            string[] lines = File.ReadAllLines(outFilepath);
+            lines[0] = lineCount.ToString();
+            File.WriteAllLines(outFilepath, lines);
         }
     }
 
@@ -54,7 +53,7 @@ public class ProcessFile : MonoBehaviour
         {
             line = read.ReadLine();
 
-            if (a >= 100)
+            if (a >= 500)
             {
                 List<String> pointValues = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList<string>();
                 
