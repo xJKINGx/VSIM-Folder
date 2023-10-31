@@ -52,16 +52,19 @@ public class ProcessFile : MonoBehaviour
         for (int i = 0; i < fileLength; i++)
         {
             line = read.ReadLine();
-
-            if (a >= 500)
+            
+            // If-sentence added to make creating terrain.txt easier
+            // The lower the number, the more precision, but also the more time it takes
+            // to convert the data.
+            if (a >= 250)
             {
                 List<String> pointValues = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList<string>();
                 
                 // To change the x- and z-values we need to convert to float
                 List<float> fPointValues = new List<float>();
                 fPointValues.Add(float.Parse(pointValues[0], CultureInfo.InvariantCulture.NumberFormat) - 611000.0f);
-                fPointValues.Add(float.Parse(pointValues[2], CultureInfo.InvariantCulture.NumberFormat));
-                fPointValues.Add(float.Parse(pointValues[1], CultureInfo.InvariantCulture.NumberFormat) - 6641000.0f);
+                fPointValues.Add(float.Parse(pointValues[2], CultureInfo.InvariantCulture.NumberFormat) - 200.0f);
+                fPointValues.Add(float.Parse(pointValues[1], CultureInfo.InvariantCulture.NumberFormat) - 6642000.0f);
 
                 // And then convert it back into strings
                 pointValues[0] = fPointValues[0].ToString();
@@ -72,7 +75,7 @@ public class ProcessFile : MonoBehaviour
                 fPointValues.Clear();
                 
                 // Creating the output string which will be one new line on the file
-                string outputString = pointValues[0] + " " + pointValues[2] + " " + pointValues[1];
+                string outputString = pointValues[0] + " " + pointValues[1] + " " + pointValues[2];
 
                 using (StreamWriter w = File.AppendText(outFilepath))
                 {

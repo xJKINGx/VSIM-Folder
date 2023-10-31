@@ -14,6 +14,7 @@ public class Render : MonoBehaviour
     string terrainPath = @"D:\Github Clones\VSIM-Folder\VSIMFolder\Assets\Height Data\terrain.txt";
 
     GraphicsBuffer meshTriangles;
+    GraphicsBuffer vertexPositions;
     GraphicsBuffer meshPositions;
 
     [SerializeField] Material material;
@@ -50,8 +51,12 @@ public class Render : MonoBehaviour
         */
         meshTriangles = new GraphicsBuffer(GraphicsBuffer.Target.Structured, mesh.triangles.Length, sizeof(int));
         meshTriangles.SetData(mesh.triangles);
-        meshPositions = new GraphicsBuffer(GraphicsBuffer.Target.Structured, mesh.vertices.Length, 3 * sizeof(float));
-        meshPositions.SetData(mesh.vertices);
+        
+        meshPositions = new GraphicsBuffer(GraphicsBuffer.Target.Structured, pointsCount, 3 * sizeof(float));
+        meshPositions.SetData(points.ToArray());
+
+        vertexPositions = new GraphicsBuffer(GraphicsBuffer.Target.Structured, mesh.vertices.Length, 3 * sizeof(float));
+        vertexPositions.SetData(mesh.vertices);
     }
 
 
@@ -65,6 +70,8 @@ public class Render : MonoBehaviour
         meshTriangles = null;
         meshPositions?.Dispose();
         meshPositions = null;
+        vertexPositions?.Dispose();
+        vertexPositions = null;
     }
 
     void Update()
@@ -74,10 +81,11 @@ public class Render : MonoBehaviour
         rp.matProps = new MaterialPropertyBlock();
         rp.matProps.SetBuffer("_Triangles", meshTriangles);
         rp.matProps.SetBuffer("_Positions", meshPositions);
+        rp.matProps.SetBuffer("_VertexPositions", vertexPositions);
         rp.matProps.SetInt("_StartIndex", (int)mesh.GetIndexStart(0));
         rp.matProps.SetInt("_BaseVertexIndex", (int)mesh.GetBaseVertex(0));
         rp.matProps.SetMatrix("_ObjectToWorld", Matrix4x4.Translate(new Vector3(-4.5f, 0, 0)));
         rp.matProps.SetFloat("_NumInstances", 10.0f);
-        Graphics.RenderPrimitives(rp, MeshTopology.Triangles, (int)mesh.GetIndexCount(0), 10);
+        Graphics.RenderPrimitives(rp, MeshTopology.Triangles, (int)mesh.GetIndexCount(0), pointsCount);
     }
 }
