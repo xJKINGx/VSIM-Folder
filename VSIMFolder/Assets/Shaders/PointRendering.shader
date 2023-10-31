@@ -1,4 +1,4 @@
-    Shader "PointRendering"
+Shader "PointRendering"
 {
     SubShader
     {

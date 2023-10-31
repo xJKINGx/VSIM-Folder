@@ -42,7 +42,7 @@ public class Render : MonoBehaviour
                                     float.Parse(pointValues[1]),
                                     float.Parse(pointValues[2]));
             points.Add(p);
-            Debug.Log(p);
+            //Debug.Log(p);
         }
 
         /*

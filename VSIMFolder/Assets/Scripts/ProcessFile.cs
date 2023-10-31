@@ -56,7 +56,7 @@ public class ProcessFile : MonoBehaviour
             // If-sentence added to make creating terrain.txt easier
             // The lower the number, the more precision, but also the more time it takes
             // to convert the data.
-            if (a >= 250)
+            if (a >= 25)
             {
                 List<String> pointValues = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList<string>();
                 
